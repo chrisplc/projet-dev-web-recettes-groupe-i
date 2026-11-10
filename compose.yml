@@ -1,0 +1,46 @@
+services:
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
+      POSTGRES_DB: ${POSTGRES_DB:-recettes}
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER}"]
+      interval: 2s
+      retries: 15
+
+  backend:
+    image: node:alpine
+    working_dir: /app
+    volumes:
+      - ./backend:/app
+      # node_modules reste dans le conteneur, les binaires macOS ne tournent pas sous Alpine
+      - /app/node_modules
+    command: sh -c "npm install && npm run dev"
+    ports:
+      - 3000:3000
+    environment:
+      DATABASE_URL: postgres://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@database:5432/${POSTGRES_DB:-recettes}
+    depends_on:
+      database:
+        condition: service_healthy
+
+  frontend:
+    image: node:alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    command: sh -c "npm install && npm run dev -- --host"
+    ports:
+      - 5173:5173
+    environment:
+      API_URL: http://backend:3000
+    depends_on:
+      - backend
+
+volumes:
+  db-data: {}
