@@ -1,20 +1,16 @@
-import { useEffect, useState } from 'react'
+import { Route, Routes } from 'react-router'
+import Layout from './components/layout.jsx'
+import HomePage from './pages/home-page.jsx'
+import NotFoundPage from './pages/not-found-page.jsx'
 
 function App() {
-  const [health, setHealth] = useState('chargement')
-
-  useEffect(() => {
-    fetch('/api/health')
-      .then((res) => res.json())
-      .then((data) => setHealth(`API ${data.status}, base ${data.database}`))
-      .catch(() => setHealth('API injoignable'))
-  }, [])
-
   return (
-    <main>
-      <h1>Recettes et listes de courses</h1>
-      <p>{health}</p>
-    </main>
+    <Routes>
+      <Route element={<Layout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   )
 }
 
