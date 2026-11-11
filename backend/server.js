@@ -2,10 +2,12 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import connection from "./models/db.js";
 import User from "./models/user.js";
+import authRouter from "./routes/auth.js";
 
 const app = express();
 
 app.use(express.json());
+app.use("/api/auth", authRouter);
 
 app.get("/api/health", async (req, res) => {
   try {
