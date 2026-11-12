@@ -24,6 +24,9 @@ services:
       - 3000:3000
     environment:
       DATABASE_URL: postgres://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-password}@database:5432/${POSTGRES_DB:-recettes}
+      JWT_SECRET: ${JWT_SECRET:-change-moi}
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@recettes.fr}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-admin1234}
     depends_on:
       database:
         condition: service_healthy
